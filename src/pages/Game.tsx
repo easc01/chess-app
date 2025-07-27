@@ -12,6 +12,29 @@ import { Flag, Bot, User } from "lucide-react";
 import { formatDuration } from "../utils/scoring";
 import { PIECE_IMAGES } from "@/assets/pieces";
 
+// Utility function to truncate names
+const truncateName = (name: string): string => {
+  if (name.length <= 12) return name;
+  
+  const parts = name.split(' ');
+  if (parts.length === 1) {
+    // Single word, truncate with ellipsis
+    return name.substring(0, 10) + '..';
+  }
+  
+  // Multiple words, use first initial and truncated last name
+  const firstName = parts[0];
+  const lastName = parts[parts.length - 1];
+  
+  if (firstName.length + lastName.length <= 10) {
+    return `${firstName} ${lastName}`;
+  }
+  
+  // Use initial for first name and truncated last name
+  const truncatedLastName = lastName.length > 6 ? lastName.substring(0, 4) + '..' : lastName;
+  return `${firstName.charAt(0)}. ${truncatedLastName}`;
+};
+
 export const Game: React.FC = () => {
   const [, setLocation] = useLocation();
   const [gameTimer, setGameTimer] = useState("00:00");
@@ -89,7 +112,7 @@ export const Game: React.FC = () => {
   }
 
   const currentPlayerName =
-    game.currentTurn === "white" ? user?.name || "You" : game.opponentName;
+    game.currentTurn === "white" ? truncateName(user?.name || "You") : truncateName(game.opponentName);
 
   return (
     <div className="min-h-screen p-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
