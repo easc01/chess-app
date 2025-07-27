@@ -50,8 +50,8 @@ export const Home: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <div className="w-full max-w-md">
         {/* App Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-end mb-4">
+        <div className="text-center mb-8 relative">
+          <div className="flex justify-end mb-4 absolute right-0">
             <Button
               variant="outline"
               size="sm"
@@ -100,7 +100,7 @@ export const Home: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="space-y-3">
+              <div className="flex flex-col gap-4">
                 <Button
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
                   onClick={handleStartGame}
