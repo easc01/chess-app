@@ -12,10 +12,6 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5000,
-    strictPort: true,
-    origin: 'http://0.0.0.0:5000',
-    hmr: {
-      port: 443,
-    },
+    allowedHosts: [/\.replit\.dev$/],
   },
 })
