@@ -17,7 +17,7 @@ export const Game: React.FC = () => {
   const [gameTimer, setGameTimer] = useState("00:00");
   const [isGameEndModalOpen, setIsGameEndModalOpen] = useState(false);
 
-  const { game, chess, forfeitGame, resetGame, pendingPromotion, handlePromotion } = useGameStore();
+  const { game, chess, forfeitGame, resetGame, pendingPromotion, makeMove } = useGameStore();
   const { user, updateStats } = useUserStore();
 
   // Redirect if no game in progress
@@ -63,6 +63,12 @@ export const Game: React.FC = () => {
     setIsGameEndModalOpen(false);
     resetGame();
     setLocation("/");
+  };
+
+  const handlePromotion = (piece: 'q' | 'r' | 'b' | 'n') => {
+    if (pendingPromotion) {
+      makeMove(pendingPromotion.from, pendingPromotion.to, piece);
+    }
   };
 
   if (!game || !chess) {
