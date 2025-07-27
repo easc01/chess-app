@@ -189,6 +189,48 @@ export const Game: React.FC = () => {
 
           {/* Chess Board - Full width on mobile, centered on desktop */}
           <div className="col-span-12 lg:col-span-6">
+            {/* AI Captured Pieces - Above board */}
+            {game.capturedByAI.length > 0 && (
+              <Card className="mb-4">
+                <CardContent className="p-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Bot className="text-white w-4 h-4" />
+                    </div>
+                    <div className="flex-shrink-0">
+                      <div className="font-semibold text-sm text-gray-900 dark:text-white">
+                        {game.opponentName}
+                      </div>
+                    </div>
+                    <div className="flex-1 overflow-hidden">
+                      <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+                        {game.capturedByAI.map((piece, index) => {
+                          const pieceImg = PIECE_IMAGES[piece.color][piece.type];
+                          return (
+                            <motion.div
+                              key={index}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center flex-shrink-0"
+                            >
+                              {pieceImg && (
+                                <img
+                                  src={pieceImg}
+                                  alt={piece.type}
+                                  className="w-4 h-4"
+                                  draggable={false}
+                                />
+                              )}
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card>
               <CardContent className="p-4">
                 <div className={game?.isGameOver ? "pointer-events-none opacity-75" : ""}>
@@ -202,101 +244,44 @@ export const Game: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Mobile Player Info - Compact layout below board */}
-            <div className="lg:hidden mt-4 space-y-4">
-              {/* AI Player */}
-              <Card>
-                <CardContent className="p-3">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <div className="w-8 h-8 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                      <Bot className="text-white w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-sm text-gray-900 dark:text-white">
-                        {game.opponentName}
-                      </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
-                        {game.difficulty.charAt(0).toUpperCase() + game.difficulty.slice(1)} AI
-                      </div>
-                    </div>
-                  </div>
-                  {/* Captured pieces */}
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                    Captured ({game.capturedByAI.length}):
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {game.capturedByAI.length === 0 ? (
-                      <span className="text-xs text-gray-500 dark:text-gray-400">None</span>
-                    ) : (
-                      game.capturedByAI.map((piece, index) => {
-                        const pieceImg = PIECE_IMAGES[piece.color][piece.type];
-                        return (
-                          <motion.div
-                            key={index}
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
-                          >
-                            {pieceImg && (
-                              <img
-                                src={pieceImg}
-                                alt={piece.type}
-                                className="w-4 h-4"
-                                draggable={false}
-                              />
-                            )}
-                          </motion.div>
-                        );
-                      })
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* User Player */}
+            {/* Mobile Player Info - User info only */}
+            <div className="lg:hidden mt-4">
               <Card>
                 <CardContent className="p-3">
                   <div className="flex items-center space-x-3 mb-2">
                     <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center">
                       <User className="text-white w-4 h-4" />
                     </div>
-                    <div>
+                    <div className="flex-shrink-0">
                       <div className="font-semibold text-sm text-gray-900 dark:text-white">
                         {user?.name || "You"}
                       </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
-                        You
-                      </div>
                     </div>
-                  </div>
-                  {/* Captured pieces */}
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                    Captured ({game.capturedByUser.length}):
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {game.capturedByUser.length === 0 ? (
-                      <span className="text-xs text-gray-500 dark:text-gray-400">None</span>
-                    ) : (
-                      game.capturedByUser.map((piece, index) => {
-                        const pieceImg = PIECE_IMAGES[piece.color][piece.type];
-                        return (
-                          <motion.div
-                            key={index}
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
-                          >
-                            {pieceImg && (
-                              <img
-                                src={pieceImg}
-                                alt={piece.type}
-                                className="w-4 h-4"
-                                draggable={false}
-                              />
-                            )}
-                          </motion.div>
-                        );
-                      })
+                    {game.capturedByUser.length > 0 && (
+                      <div className="flex-1 overflow-hidden">
+                        <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+                          {game.capturedByUser.map((piece, index) => {
+                            const pieceImg = PIECE_IMAGES[piece.color][piece.type];
+                            return (
+                              <motion.div
+                                key={index}
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center flex-shrink-0"
+                              >
+                                {pieceImg && (
+                                  <img
+                                    src={pieceImg}
+                                    alt={piece.type}
+                                    className="w-4 h-4"
+                                    draggable={false}
+                                  />
+                                )}
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </CardContent>
