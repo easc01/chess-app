@@ -5,6 +5,7 @@ import { cn } from "../lib/utils";
 import { PIECE_IMAGES } from "@/assets/pieces";
 
 const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
+const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
 const RANKS = ["8", "7", "6", "5", "4", "3", "2", "1"];
 
 export const ChessBoard: React.FC = () => {

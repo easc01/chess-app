@@ -89,7 +89,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         moves: [...game.moves, gameMove],
         fen: chess.fen(),
         currentTurn: chess.turn() === 'w' ? 'white' as const : 'black' as const,
-        score: calculateScore(game, gameMove) || 0,
+        score: calculateScore(game, gameMove) ?? game.score,
         capturedByUser: capturedPiece && capturedPiece.color === 'black' 
           ? [...game.capturedByUser, capturedPiece] 
           : game.capturedByUser,
@@ -233,7 +233,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         moves: [...game.moves, gameMove],
         fen: chess.fen(),
         currentTurn: chess.turn() === 'w' ? 'white' as const : 'black' as const,
-        score: calculateScore(game, gameMove) || game.score,
+        score: calculateScore(game, gameMove) ?? game.score,
         capturedByAI: capturedPiece 
           ? [...game.capturedByAI, capturedPiece] 
           : game.capturedByAI,

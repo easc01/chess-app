@@ -24,7 +24,8 @@ export const loadUser = async (): Promise<User | null> => {
       ...parsed,
       createdAt: new Date(parsed.createdAt),
     };
-  } catch {
+  } catch (error) {
+    console.warn('Failed to parse user data:', error);
     return null;
   }
 };

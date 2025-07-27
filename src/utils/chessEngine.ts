@@ -87,6 +87,6 @@ export class ChessEngine {
       'q': 9,
       'k': 100
     };
-    return values[piece.toLowerCase()] || 0;
+    return values[piece?.toLowerCase()] || 0;
   }
 }
