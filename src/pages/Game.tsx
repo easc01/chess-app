@@ -203,10 +203,11 @@ export const Game: React.FC = () => {
             </Card>
 
             {/* Mobile Player Info - Compact layout below board */}
-            <div className="lg:hidden mt-4 grid grid-cols-2 gap-4">
+            <div className="lg:hidden mt-4 space-y-4">
+              {/* AI Player */}
               <Card>
-                <CardContent className="p-3 text-center">
-                  <div className="flex items-center justify-center space-x-2">
+                <CardContent className="p-3">
+                  <div className="flex items-center space-x-3 mb-2">
                     <div className="w-8 h-8 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center">
                       <Bot className="text-white w-4 h-4" />
                     </div>
@@ -219,16 +220,43 @@ export const Game: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  {/* Captured pieces count */}
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Captured: {game.capturedByAI.length}
+                  {/* Captured pieces */}
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    Captured ({game.capturedByAI.length}):
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {game.capturedByAI.length === 0 ? (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">None</span>
+                    ) : (
+                      game.capturedByAI.map((piece, index) => {
+                        const pieceImg = PIECE_IMAGES[piece.color][piece.type];
+                        return (
+                          <motion.div
+                            key={index}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
+                          >
+                            {pieceImg && (
+                              <img
+                                src={pieceImg}
+                                alt={piece.type}
+                                className="w-4 h-4"
+                                draggable={false}
+                              />
+                            )}
+                          </motion.div>
+                        );
+                      })
+                    )}
                   </div>
                 </CardContent>
               </Card>
 
+              {/* User Player */}
               <Card>
-                <CardContent className="p-3 text-center">
-                  <div className="flex items-center justify-center space-x-2">
+                <CardContent className="p-3">
+                  <div className="flex items-center space-x-3 mb-2">
                     <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center">
                       <User className="text-white w-4 h-4" />
                     </div>
@@ -241,9 +269,35 @@ export const Game: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  {/* Captured pieces count */}
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    Captured: {game.capturedByUser.length}
+                  {/* Captured pieces */}
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    Captured ({game.capturedByUser.length}):
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {game.capturedByUser.length === 0 ? (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">None</span>
+                    ) : (
+                      game.capturedByUser.map((piece, index) => {
+                        const pieceImg = PIECE_IMAGES[piece.color][piece.type];
+                        return (
+                          <motion.div
+                            key={index}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
+                          >
+                            {pieceImg && (
+                              <img
+                                src={pieceImg}
+                                alt={piece.type}
+                                className="w-4 h-4"
+                                draggable={false}
+                              />
+                            )}
+                          </motion.div>
+                        );
+                      })
+                    )}
                   </div>
                 </CardContent>
               </Card>
