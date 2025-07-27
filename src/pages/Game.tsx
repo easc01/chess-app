@@ -144,8 +144,8 @@ export const Game: React.FC = () => {
       {/* Game Board Container */}
       <div className="max-w-4xl mx-auto">
         <div className="grid lg:grid-cols-12 gap-6">
-          {/* Left Sidebar - Opponent Info & Captured Pieces */}
-          <div className="lg:col-span-3">
+          {/* Left Sidebar - Opponent Info & Captured Pieces (Hidden on mobile) */}
+          <div className="hidden lg:block lg:col-span-3">
             <Card className="mb-4">
               <CardContent className="p-4 text-center">
                 <div className="w-12 h-12 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -187,8 +187,8 @@ export const Game: React.FC = () => {
             </Card>
           </div>
 
-          {/* Chess Board */}
-          <div className="lg:col-span-6">
+          {/* Chess Board - Full width on mobile, centered on desktop */}
+          <div className="col-span-12 lg:col-span-6">
             <Card>
               <CardContent className="p-4">
                 <div className={game?.isGameOver ? "pointer-events-none opacity-75" : ""}>
@@ -201,10 +201,57 @@ export const Game: React.FC = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Mobile Player Info - Compact layout below board */}
+            <div className="lg:hidden mt-4 grid grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="p-3 text-center">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-8 h-8 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                      <Bot className="text-white w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-gray-900 dark:text-white">
+                        {game.opponentName}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        {game.difficulty.charAt(0).toUpperCase() + game.difficulty.slice(1)} AI
+                      </div>
+                    </div>
+                  </div>
+                  {/* Captured pieces count */}
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Captured: {game.capturedByAI.length}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-3 text-center">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center">
+                      <User className="text-white w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm text-gray-900 dark:text-white">
+                        {user?.name || "You"}
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        You
+                      </div>
+                    </div>
+                  </div>
+                  {/* Captured pieces count */}
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Captured: {game.capturedByUser.length}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
-          {/* Right Sidebar - User Info & Captured Pieces */}
-          <div className="lg:col-span-3">
+          {/* Right Sidebar - User Info & Captured Pieces (Hidden on mobile) */}
+          <div className="hidden lg:block lg:col-span-3">
             <Card className="mb-4">
               <CardContent className="p-4 text-center">
                 <div className="w-12 h-12 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
