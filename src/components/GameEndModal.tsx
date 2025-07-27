@@ -13,6 +13,7 @@ interface GameEndModalProps {
   duration: string;
   onPlayAgain: () => void;
   onBackToHome: () => void;
+  onClose: () => void;
 }
 
 export const GameEndModal: React.FC<GameEndModalProps> = ({
@@ -23,6 +24,7 @@ export const GameEndModal: React.FC<GameEndModalProps> = ({
   duration,
   onPlayAgain,
   onBackToHome,
+  onClose,
 }) => {
   const getResultIcon = () => {
     switch (result) {
@@ -69,7 +71,7 @@ export const GameEndModal: React.FC<GameEndModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-md">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}

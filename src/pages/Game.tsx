@@ -16,6 +16,7 @@ export const Game: React.FC = () => {
   const [, setLocation] = useLocation();
   const [gameTimer, setGameTimer] = useState("00:00");
   const [isGameEndModalOpen, setIsGameEndModalOpen] = useState(false);
+  const [showFinalBoard, setShowFinalBoard] = useState(false);
 
   const { game, chess, forfeitGame, resetGame, pendingPromotion, makeMove } = useGameStore();
   const { user, updateStats } = useUserStore();
@@ -43,13 +44,20 @@ export const Game: React.FC = () => {
   useEffect(() => {
     if (game?.isGameOver && game.result) {
       setIsGameEndModalOpen(true);
+      setShowFinalBoard(false);
       updateStats(game.result, game.score);
     }
   }, [game?.isGameOver, game?.result, game?.score, updateStats]);
 
   const handleForfeit = async () => {
-    if (window.confirm("Are you sure you want to forfeit this game?")) {
-      await forfeitGame();
+    if (game?.isGameOver) {
+      // Show game end modal again
+      setIsGameEndModalOpen(true);
+      setShowFinalBoard(false);
+    } else {
+      if (window.confirm("Are you sure you want to forfeit this game?")) {
+        await forfeitGame();
+      }
     }
   };
 
@@ -63,6 +71,11 @@ export const Game: React.FC = () => {
     setIsGameEndModalOpen(false);
     resetGame();
     setLocation("/");
+  };
+
+  const handleCloseGameEndModal = () => {
+    setIsGameEndModalOpen(false);
+    setShowFinalBoard(true);
   };
 
   const handlePromotion = (piece: 'q' | 'r' | 'b' | 'n') => {
@@ -87,10 +100,14 @@ export const Game: React.FC = () => {
             <Button
               variant="outline"
               onClick={handleForfeit}
-              className="flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+              className={`flex items-center px-4 py-2 ${
+                game?.isGameOver
+                  ? "bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800"
+                  : "bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+              }`}
             >
               <Flag className="w-4 h-4 mr-2" />
-              Forfeit
+              {game?.isGameOver ? "Show Results" : "Forfeit"}
             </Button>
 
             <div className="text-center">
@@ -174,7 +191,14 @@ export const Game: React.FC = () => {
           <div className="lg:col-span-6">
             <Card>
               <CardContent className="p-4">
-                <ChessBoard />
+                <div className={game?.isGameOver ? "pointer-events-none opacity-75" : ""}>
+                  <ChessBoard />
+                </div>
+                {game?.isGameOver && showFinalBoard && (
+                  <div className="text-center mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    Final Position - Game Over
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -245,6 +269,7 @@ export const Game: React.FC = () => {
           )}
           onPlayAgain={handlePlayAgain}
           onBackToHome={handleBackToHome}
+          onClose={handleCloseGameEndModal}
         />
       )}
     </div>
