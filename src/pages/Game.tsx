@@ -1,0 +1,238 @@
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "wouter";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ChessBoard } from "../components/ChessBoard";
+import { GameEndModal } from "../components/GameEndModal";
+import { useGameStore } from "../store/gameStore";
+import { useUserStore } from "../store/userStore";
+import { Flag, Bot, User } from "lucide-react";
+import { formatDuration } from "../utils/scoring";
+import { PIECE_IMAGES } from "@/assets/pieces";
+
+export const Game: React.FC = () => {
+  const [, setLocation] = useLocation();
+  const [gameTimer, setGameTimer] = useState("00:00");
+  const [isGameEndModalOpen, setIsGameEndModalOpen] = useState(false);
+
+  const { game, chess, forfeitGame, resetGame } = useGameStore();
+  const { user, updateStats } = useUserStore();
+
+  // Redirect if no game in progress
+  useEffect(() => {
+    if (!game || !chess) {
+      setLocation("/");
+    }
+  }, [game, chess, setLocation]);
+
+  // Update timer
+  useEffect(() => {
+    if (!game?.startTime || game.isGameOver) return;
+
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - game.startTime.getTime();
+      setGameTimer(formatDuration(Math.floor(elapsed / 1000)));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [game?.startTime, game?.isGameOver]);
+
+  // Handle game end
+  useEffect(() => {
+    if (game?.isGameOver && game.result) {
+      setIsGameEndModalOpen(true);
+      updateStats(game.result, game.score);
+    }
+  }, [game?.isGameOver, game?.result, game?.score, updateStats]);
+
+  const handleForfeit = async () => {
+    if (window.confirm("Are you sure you want to forfeit this game?")) {
+      await forfeitGame();
+    }
+  };
+
+  const handlePlayAgain = () => {
+    setIsGameEndModalOpen(false);
+    resetGame();
+    setLocation("/");
+  };
+
+  const handleBackToHome = () => {
+    setIsGameEndModalOpen(false);
+    resetGame();
+    setLocation("/");
+  };
+
+  if (!game || !chess) {
+    return null;
+  }
+
+  const currentPlayerName =
+    game.currentTurn === "white" ? user?.name || "You" : game.opponentName;
+
+  return (
+    <div className="min-h-screen p-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      {/* Game Header */}
+      <div className="max-w-4xl mx-auto mb-4">
+        <Card>
+          <CardContent className="flex justify-between items-center p-4">
+            <Button
+              variant="outline"
+              onClick={handleForfeit}
+              className="flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+            >
+              <Flag className="w-4 h-4 mr-2" />
+              Forfeit
+            </Button>
+
+            <div className="text-center">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Current Turn
+              </div>
+              <div className="font-semibold text-gray-900 dark:text-white">
+                {currentPlayerName}'s Turn
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Score
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {game.score.toLocaleString()}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Time
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {gameTimer}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Game Board Container */}
+      <div className="max-w-4xl mx-auto">
+        <div className="grid lg:grid-cols-12 gap-6">
+          {/* Left Sidebar - Opponent Info & Captured Pieces */}
+          <div className="lg:col-span-3">
+            <Card className="mb-4">
+              <CardContent className="p-4 text-center">
+                <div className="w-12 h-12 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Bot className="text-white" />
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {game.opponentName}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {game.difficulty.charAt(0).toUpperCase() +
+                    game.difficulty.slice(1)}{" "}
+                  AI
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Captured Pieces by User */}
+            <Card>
+              <CardContent className="p-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  Captured
+                </h4>
+                <div className="grid grid-cols-4 gap-2">
+                  {game.capturedByAI.map((piece, index) => {
+                    const Img = PIECE_IMAGES[piece.color][piece.type];
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
+                      >
+                        {Img && <img src={Img} alt={piece.type} className="w-6 h-6" draggable={false} />}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Chess Board */}
+          <div className="lg:col-span-6">
+            <Card>
+              <CardContent className="p-4">
+                <ChessBoard />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Sidebar - User Info & Captured Pieces */}
+          <div className="lg:col-span-3">
+            <Card className="mb-4">
+              <CardContent className="p-4 text-center">
+                <div className="w-12 h-12 bg-blue-600 dark:bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <User className="text-white" />
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {user?.name || "You"}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  You
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Captured Pieces by AI */}
+            <Card>
+              <CardContent className="p-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  Captured
+                </h4>
+                <div className="grid grid-cols-4 gap-2">
+                  {game.capturedByUser.map((piece, index) => {
+                    const Img = PIECE_IMAGES[piece.color][piece.type];
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center"
+                      >
+                        {Img && <img src={Img} alt={piece.type} className="w-6 h-6" draggable={false} />}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Game End Modal */}
+      {game.result && (
+        <GameEndModal
+          isOpen={isGameEndModalOpen}
+          result={game.result}
+          opponentName={game.opponentName}
+          finalScore={game.score}
+          duration={formatDuration(
+            game.endTime
+              ? Math.floor(
+                  (game.endTime.getTime() - game.startTime.getTime()) / 1000
+                )
+              : 0
+          )}
+          onPlayAgain={handlePlayAgain}
+          onBackToHome={handleBackToHome}
+        />
+      )}
+    </div>
+  );
+};

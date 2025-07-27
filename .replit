@@ -1,0 +1,13 @@
+run = "npm run dev"
+
+[deployment]
+deploymentTarget = "autoscale"
+build = ["npm", "run", "build"]
+run = ["npm", "run", "start"]
+
+[[ports]]
+localPort = 5173
+externalPort = 80
+
+[env]
+PORT = "5173"
