@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChessBoard } from "../components/ChessBoard";
 import { GameEndModal } from "../components/GameEndModal";
+import { PromotionModal } from "../components/PromotionModal";
 import { useGameStore } from "../store/gameStore";
 import { useUserStore } from "../store/userStore";
 import { Flag, Bot, User } from "lucide-react";
@@ -16,7 +17,7 @@ export const Game: React.FC = () => {
   const [gameTimer, setGameTimer] = useState("00:00");
   const [isGameEndModalOpen, setIsGameEndModalOpen] = useState(false);
 
-  const { game, chess, forfeitGame, resetGame } = useGameStore();
+  const { game, chess, forfeitGame, resetGame, pendingPromotion, handlePromotion } = useGameStore();
   const { user, updateStats } = useUserStore();
 
   // Redirect if no game in progress
@@ -214,6 +215,13 @@ export const Game: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Promotion Modal */}
+      <PromotionModal
+        isOpen={!!pendingPromotion}
+        onPromotion={handlePromotion}
+        playerColor="white"
+      />
 
       {/* Game End Modal */}
       {game.result && (

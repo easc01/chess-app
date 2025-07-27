@@ -15,15 +15,23 @@ export class ChessEngine {
     const moves = this.chess.moves({ verbose: true });
     if (moves.length === 0) return null;
 
+    // For AI, always promote to queen (strongest piece)
+    const processedMoves = moves.map(move => {
+      if (move.flags && move.flags.includes('p')) {
+        return { ...move, promotion: 'q' };
+      }
+      return move;
+    });
+
     switch (this.difficulty) {
       case 'easy':
-        return this.getRandomMove(moves);
+        return this.getRandomMove(processedMoves);
       case 'medium':
-        return this.getMediumMove(moves);
+        return this.getMediumMove(processedMoves);
       case 'hard':
-        return this.getHardMove(moves);
+        return this.getHardMove(processedMoves);
       default:
-        return this.getRandomMove(moves);
+        return this.getRandomMove(processedMoves);
     }
   }
 
