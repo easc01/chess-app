@@ -189,9 +189,9 @@ export const Game: React.FC = () => {
 
           {/* Chess Board - Full width on mobile, centered on desktop */}
           <div className="col-span-12 lg:col-span-6">
-            {/* AI Captured Pieces - Above board */}
+            {/* AI Captured Pieces - Above board (Mobile only) */}
             {game.capturedByAI.length > 0 && (
-              <Card className="mb-4">
+              <Card className="lg:hidden mb-4">
                 <CardContent className="p-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
